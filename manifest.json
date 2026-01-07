@@ -1,0 +1,23 @@
+{
+  "short_name": "GoPalPDF",
+  "name": "GoPal PDF Translator",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/10433/10433049.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/10433/10433049.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#f97316",
+  "background_color": "#f8fafc"
+}
