@@ -1,7 +1,72 @@
-.
-v3
 name: Build APK
 
 on:
   push:  
     branches: 
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs: 
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:  
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+          
+      - name:  Install dependencies
+        run: npm ci
+        
+      - name:  Build web assets
+        run: npm run build
+        
+      - name: Install Capacitor CLI
+        run:  npm install -g @capacitor/cli
+        
+      - name:  Initialize Capacitor (if needed)
+        run: |
+          if [ ! -f capacitor.config.ts ]; then
+            npx @capacitor/cli init --web-dir dist
+          fi
+        
+      - name:  Sync Capacitor Android
+        run: npx cap sync android
+        
+      - name: Build APK with Gradle
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+        
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name:  pdf-translator-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+        
+      - name: Upload to GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:  
+          files: android/app/build/outputs/apk/release/app-release. apk
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
